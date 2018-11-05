@@ -1,0 +1,18 @@
+import wmi
+import math
+c = wmi.WMI()
+def convert_size(size_bytes):
+   if size_bytes == 0:
+       return "0B"
+   size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+   i = int(math.floor(math.log(size_bytes, 1024)))
+   p = math.pow(1024, i)
+   s = round(size_bytes / p, 2)
+   res=str(s)+size_name[i]
+   return res
+  
+
+for disk in c.Win32_LogicalDisk():
+	if disk.Caption == "G:":
+		print(disk)
+		print(convert_size(float(disk.Size)))
