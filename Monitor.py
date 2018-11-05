@@ -50,7 +50,7 @@ def newDrive(dn,fs,s,size):
 	rows = cout.fetchall()
 	try:
 		if len(rows) == 0:
-			c.execute('INSERT INTO Drives(id,DriveName,FileSystem,Serial,size) values(NULL,"'+dn+'","'+fs+'","'+str(s)+'",'+convert_size(size)+');')
+			c.execute('INSERT INTO Drives(id,DriveName,FileSystem,Serial,size) values(NULL,"'+dn+'","'+fs+'","'+str(s)+'","'+str(convert_size(int(size)))+'");')
 			conn.commit()
 			conn.close()
 	except Error as e:
@@ -159,11 +159,11 @@ if __name__ == '__main__':
 					volInf=win32api.GetVolumeInformation(str(i)+":\\")
 					session_create(i,volInf[0],get_Serial(str(i)+":"))
 					p1.start()
-					newDrive(volInf[0],volInf[0],get_Serial(str(i)+":"),get_dsize(str(i)+":"))
+					newDrive(volInf[0],volInf[4],get_Serial(str(i)+":"),get_dsize(str(i)+":"))
 					print("process Started for Drive : "+str(i))
 					drive_dic[i]=p1 #new process
 				print(drive_dic)
-				Db_Dump()
+				#Db_Dump()
 				drives_list=drives_list1
 			elif len(list(set(drives_list) - set(drives_list1))) > 0:
 				print("Drives Removed"+str(set(drives_list) - set(drives_list1)))
@@ -180,6 +180,6 @@ if __name__ == '__main__':
 		for i in drive_dic.keys():
 			drive_dic[i].terminate()
 		end_allsessions()
-		#Db_Dump()
+		Db_Dump()
 		print(" Ending All Sessions \n All watchers Terminated")
 		exit(0)
