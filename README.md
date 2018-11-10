@@ -12,4 +12,4 @@ Pre- Requisutes:
   
     python Monitor.py 
     
-    This runs the Agent and continously monitors the system no other config required
+   This runs the Agent and continously monitors the system no other config required
