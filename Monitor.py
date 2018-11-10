@@ -19,7 +19,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate
 from email import encoders
-from email.MIMEBase import MIMEBase
+from email.mime.base import MIMEBase
 c = wmi.WMI()
 
 def convert_size(size_bytes):
@@ -155,20 +155,20 @@ def sendEmail(d):
 	
 	part = MIMEBase('application', "octet-stream")
 	part.set_payload(open("sessions.csv", "rb").read())
-	Encoders.encode_base64(part)
+	encoders.encode_base64(part)
 	part.add_header('Content-Disposition', 'attachment; filename="sessions.csv"')
 	msg.attach(part)
 	
 	part = MIMEBase('application', "octet-stream")
-	part.set_payload(open("text.txt", "rb").read())
-	Encoders.encode_base64(part)
-	part.add_header('Content-Disposition', 'attachment; filename="text.txt"')
+	part.set_payload(open("History.csv", "rb").read())
+	encoders.encode_base64(part)
+	part.add_header('Content-Disposition', 'attachment; filename="History.csv"')
 	msg.attach(part)
 	
 	part = MIMEBase('application', "octet-stream")
-	part.set_payload(open("text.txt", "rb").read())
-	Encoders.encode_base64(part)
-	part.add_header('Content-Disposition', 'attachment; filename="text.txt"')
+	part.set_payload(open("Drives.csv", "rb").read())
+	encoders.encode_base64(part)
+	part.add_header('Content-Disposition', 'attachment; filename="Drives.csv"')
 	msg.attach(part)
 	
 	
@@ -201,7 +201,8 @@ def sendData(d):
 		writer = csv.writer(f)
 		writer.writerow(['Serial', 'Drive Name','File System','Serial','Size'])
 		writer.writerows(cout)
-		
+	
+	#sendEmail(d)
 	
 def get_Serial(d):
 	for disk in c.Win32_LogicalDisk():
