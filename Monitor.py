@@ -13,6 +13,13 @@ from sqlite3 import Error
 import win32api
 import wmi
 import math
+import csv
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.utils import COMMASPACE, formatdate
+from email import encoders
+from email.MIMEBase import MIMEBase
 c = wmi.WMI()
 
 def convert_size(size_bytes):
@@ -132,7 +139,70 @@ def Db_Dump():
 	cur=conn.execute('select * from Drives;')
 	for i in cur:
 		print(i)
+		
+def sendEmail(d):
+	fromaddr = 'fortestingcodes@gmail.com'
+	toaddrs = 'ajaykumarkk77@gmail.com'
 
+	msg = MIMEMultipart()
+	msg['Date'] = formatdate(localtime=True)
+	msg = MIMEMultipart('alternative')
+	msg['Subject'] = "hashvalue"
+	msg['From'] = fromaddr #like name
+	msg['To'] = toaddrs
+	body = MIMEText(str("Drive Monitoring Report"))
+	msg.attach(body)
+	
+	part = MIMEBase('application', "octet-stream")
+	part.set_payload(open("sessions.csv", "rb").read())
+	Encoders.encode_base64(part)
+	part.add_header('Content-Disposition', 'attachment; filename="sessions.csv"')
+	msg.attach(part)
+	
+	part = MIMEBase('application', "octet-stream")
+	part.set_payload(open("text.txt", "rb").read())
+	Encoders.encode_base64(part)
+	part.add_header('Content-Disposition', 'attachment; filename="text.txt"')
+	msg.attach(part)
+	
+	part = MIMEBase('application', "octet-stream")
+	part.set_payload(open("text.txt", "rb").read())
+	Encoders.encode_base64(part)
+	part.add_header('Content-Disposition', 'attachment; filename="text.txt"')
+	msg.attach(part)
+	
+	
+	username = 'fortestingcodes@gmail.com'
+	password = 'srinuiidt25'
+	server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
+	server.login(username, password)
+	server.sendmail(fromaddr, toaddrs, msg.as_string())
+	server.quit()
+	return
+	
+		
+def sendData(d):
+	conn=dbConnect()
+	c=conn.cursor()
+	cout=c.execute('select id,Drive,DriveName,Serial,datetime(start, "unixepoch", "localtime"),datetime(end, "unixepoch", "localtime") from sessions where Drive = "'+ d + '" and end is NOT NULL')
+	with open('sessions.csv', 'w') as f:
+		writer = csv.writer(f)
+		writer.writerow(['Serial', 'Drive Leter','Drive Name','Drive Serial','Start Time','End Time'])
+		writer.writerows(cout)
+	
+	cout=c.execute('select id,Drive,Path,Event,datetime(Time, "unixepoch", "localtime") from Hist where Drive = "'+ d + '"')
+	with open('History.csv', 'w') as f:
+		writer = csv.writer(f)
+		writer.writerow(['Serial', 'Drive Leter','Path','Event Occured','Time'])
+		writer.writerows(cout)
+	
+	cout=c.execute('select * from Drives')
+	with open('Drives.csv', 'w') as f:
+		writer = csv.writer(f)
+		writer.writerow(['Serial', 'Drive Name','File System','Serial','Size'])
+		writer.writerows(cout)
+		
+	
 def get_Serial(d):
 	for disk in c.Win32_LogicalDisk():
 		if disk.Caption == d:
@@ -170,10 +240,10 @@ if __name__ == '__main__':
 				for i in (set(drives_list) - set(drives_list1)):
 					if i in drive_dic.keys():
 						drive_dic[i].terminate()
-						#volInf=win32api.GetVolumeInformation(str(i)+":\\")
 						print("Kiling process")
 						session_end(str(i))
-						del drive_dic[i] #terminate proces
+						del drive_dic[i]
+					sendData(str(i))	
 				print(drive_dic)
 				drives_list=drives_list1
 	except KeyboardInterrupt:
