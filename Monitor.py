@@ -141,8 +141,8 @@ def Db_Dump():
 		print(i)
 		
 def sendEmail(d):
-	fromaddr = 'fortestingcodes@gmail.com'
-	toaddrs = 'ajaykumarkk77@gmail.com'
+	fromaddr = '@gmail.com'
+	toaddrs = '@gmail.com'
 
 	msg = MIMEMultipart()
 	msg['Date'] = formatdate(localtime=True)
@@ -172,8 +172,8 @@ def sendEmail(d):
 	msg.attach(part)
 	
 	
-	username = 'fortestingcodes@gmail.com'
-	password = 'srinuiidt25'
+	username = '@gmail.com'
+	password = ''
 	server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
 	server.login(username, password)
 	server.sendmail(fromaddr, toaddrs, msg.as_string())
